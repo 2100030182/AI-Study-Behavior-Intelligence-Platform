@@ -34,7 +34,7 @@ df = pd.read_csv(
 )
 
 # -------------------------
-# App Title
+# Title
 # -------------------------
 
 st.title("AI Study Behavior Intelligence Platform")
@@ -44,7 +44,7 @@ st.subheader(
 )
 
 # -------------------------
-# Layout Columns
+# Input Layout
 # -------------------------
 
 col1, col2 = st.columns(2)
@@ -122,7 +122,10 @@ if st.button("Predict"):
         )
     )[0]
 
-    # Show Results
+    # -------------------------
+    # Show Predictions
+    # -------------------------
+
     st.success(
         f"Predicted Productivity Score: "
         f"{round(productivity_prediction, 2)}"
@@ -132,6 +135,46 @@ if st.button("Predict"):
         f"Predicted Burnout Level: "
         f"{burnout_prediction}"
     )
+
+    # -------------------------
+    # Smart Recommendations
+    # -------------------------
+
+    st.markdown("### 🧠 Smart Recommendations")
+
+    recommendations = []
+
+    if sleep_hours < 6:
+        recommendations.append(
+            "⚠️ Sleep is below recommended level. Try sleeping at least 7 hours."
+        )
+
+    if study_hours > 7:
+        recommendations.append(
+            "📚 Study hours are high. Consider reducing workload."
+        )
+
+    if break_minutes < 40:
+        recommendations.append(
+            "☕ Break time is low. Take breaks every 60–90 minutes."
+        )
+
+    if burnout_prediction == "High":
+        recommendations.append(
+            "🔥 High burnout risk detected. Reduce workload and improve rest."
+        )
+
+    if len(recommendations) == 0:
+
+        st.success(
+            "✅ Your study habits look healthy!"
+        )
+
+    else:
+
+        for rec in recommendations:
+
+            st.info(rec)
 
 # -------------------------
 # Divider
@@ -143,9 +186,10 @@ st.markdown("---")
 # Visualization Section
 # -------------------------
 
-st.header("Study Behavior Trends")
+st.header("📊 Study Behavior Trends")
 
 # Study Hours Trend
+
 fig1, ax1 = plt.subplots()
 
 ax1.plot(df["study_hours"])
@@ -162,7 +206,7 @@ st.pyplot(fig1)
 # Productivity Distribution
 # -------------------------
 
-st.header("Productivity Distribution")
+st.header("📈 Productivity Distribution")
 
 fig2, ax2 = plt.subplots()
 
@@ -182,7 +226,7 @@ st.pyplot(fig2)
 # Sleep vs Productivity
 # -------------------------
 
-st.header("Sleep vs Productivity")
+st.header("😴 Sleep vs Productivity")
 
 fig3, ax3 = plt.subplots()
 
