@@ -241,3 +241,100 @@ ax3.set_title(
 )
 
 st.pyplot(fig3)
+
+# -------------------------
+# PDF Report Download
+# -------------------------
+
+st.markdown("---")
+
+st.header("📄 Weekly Report")
+
+if st.button("Generate Weekly PDF Report"):
+
+    import pandas as pd
+    from reportlab.platypus import (
+        SimpleDocTemplate,
+        Paragraph,
+        Spacer,
+        Table
+    )
+    from reportlab.lib.styles import getSampleStyleSheet
+
+    # Load dataset
+    df = pd.read_csv(
+        "data/processed_student_behavior_data.csv"
+    )
+
+    df["date"] = pd.to_datetime(df["date"])
+
+    last_week = df.tail(7)
+
+    avg_study = round(
+        last_week["study_hours"].mean(),
+        2
+    )
+
+    avg_sleep = round(
+        last_week["sleep_hours"].mean(),
+        2
+    )
+
+    avg_productivity = round(
+        last_week["productivity_score"].mean(),
+        2
+    )
+
+    burnout_days = last_week[
+        last_week["burnout_risk_score"] > 0.6
+    ].shape[0]
+
+    sleep_deficit_days = last_week[
+        last_week["sleep_deficit"] == 1
+    ].shape[0]
+
+    styles = getSampleStyleSheet()
+
+    document = SimpleDocTemplate(
+        "data/weekly_report_dashboard.pdf"
+    )
+
+    elements = []
+
+    elements.append(
+        Paragraph(
+            "Weekly Productivity Report",
+            styles["Title"]
+        )
+    )
+
+    elements.append(Spacer(1, 12))
+
+    table_data = [
+        ["Metric", "Value"],
+        ["Average Study Hours", avg_study],
+        ["Average Sleep Hours", avg_sleep],
+        ["Average Productivity", avg_productivity],
+        ["Burnout Risk Days", burnout_days],
+        ["Sleep Deficit Days", sleep_deficit_days]
+    ]
+
+    table = Table(table_data)
+
+    elements.append(table)
+
+    document.build(elements)
+
+    st.success("PDF Report Generated!")
+
+    with open(
+        "data/weekly_report_dashboard.pdf",
+        "rb"
+    ) as file:
+
+        st.download_button(
+            label="📥 Download Weekly Report PDF",
+            data=file,
+            file_name="weekly_report.pdf",
+            mime="application/pdf"
+        )

@@ -81,4 +81,4 @@ elements.append(table)
 # Build PDF
 document.build(elements)
 
-print("Weekly PDF report generated successfully!")
+print("Weekly PDF report generated successfully!")``
