@@ -338,3 +338,68 @@ if st.button("Generate Weekly PDF Report"):
             file_name="weekly_report.pdf",
             mime="application/pdf"
         )
+
+        # -------------------------
+# Productivity Forecast
+# -------------------------
+
+st.markdown("---")
+
+st.header("📈 Productivity Forecast (Next 7 Days)")
+
+from statsmodels.tsa.arima.model import ARIMA
+
+# Prepare data
+df_forecast = pd.read_csv(
+    "data/processed_student_behavior_data.csv"
+)
+
+df_forecast["date"] = pd.to_datetime(
+    df_forecast["date"]
+)
+
+df_forecast = df_forecast.sort_values(
+    "date"
+)
+
+productivity_series = df_forecast[
+    "productivity_score"
+]
+
+# Train ARIMA
+model = ARIMA(
+    productivity_series,
+    order=(5, 1, 0)
+)
+
+model_fit = model.fit()
+
+# Forecast
+forecast = model_fit.forecast(
+    steps=7
+)
+
+# Plot Forecast
+fig4, ax4 = plt.subplots()
+
+ax4.plot(
+    productivity_series,
+    label="Historical Productivity"
+)
+
+ax4.plot(
+    range(
+        len(productivity_series),
+        len(productivity_series) + 7
+    ),
+    forecast,
+    label="Forecast (Next 7 Days)"
+)
+
+ax4.set_title(
+    "Productivity Forecast"
+)
+
+ax4.legend()
+
+st.pyplot(fig4)
